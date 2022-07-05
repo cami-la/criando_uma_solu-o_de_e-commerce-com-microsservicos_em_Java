@@ -1,0 +1,64 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id "com.commercehub.gradle.plugin.avro" version "0.99.99"
+	id 'java'
+}
+
+group = 'br.hatanaka.ecommerce'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	all {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		exclude group: 'ch.qos.logback', module: 'logback-classic'
+		exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url "https://packages.confluent.io/maven"
+	}
+}
+
+ext {
+	set('springCloudVersion', "2021.0.3")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.apache.kafka:kafka-streams'
+	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+	implementation 'org.springframework.cloud:spring-cloud-stream'
+	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
+	implementation 'io.confluent:kafka-avro-serializer:4.0.0'
+	testImplementation 'io.confluent:kafka-schema-registry:4.0.0:tests'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+avro {
+	fieldVisibility = "PRIVATE"
+}
+
+generateAvroJava {
+	source 'src/main/resources/avro'
+}
