@@ -2,8 +2,10 @@ package br.hatanaka.ecommerce.checkout.resource;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class CheckoutRequest {
+public class CheckoutRequest implements Serializable {
   private String firstName;
   private String lastName;
   private String email;
